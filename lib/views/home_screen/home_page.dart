@@ -14,6 +14,36 @@ class _HomeScreenState extends State<HomeScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _idController = TextEditingController();
+  final FocusNode _nameFocusNode = FocusNode();
+  final FocusNode _idFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _idController.dispose();
+    _nameFocusNode.dispose();
+    _idFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _submitForm() {
+    _idFocusNode.unfocus();
+    if (_formKey.currentState!.validate()) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(
+            builder: (context) => CallPage(
+                callID: _idController.text.toString(),
+                uName: _nameController.text.toString()),
+          ))
+          .then((value) => setState(() {
+                _nameController.clear();
+                _idController.clear();
+              }));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please fill in the form correctly")));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,13 +74,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       customFormField(
-                          controller: _nameController,
-                          hintText: "Enter your name",
-                          errorText: "Please enter your name"),
+                        controller: _nameController,
+                        hintText: "Enter your name",
+                        errorText: "Please enter your name",
+                        focusNode: _nameFocusNode,
+                        nextFocusNode: _idFocusNode,
+                      ),
                       customFormField(
-                          controller: _idController,
-                          hintText: "Enter the Room ID",
-                          errorText: "Please enter the Room ID")
+                        controller: _idController,
+                        hintText: "Enter the Room ID",
+                        errorText: "Please enter the Room ID",
+                        focusNode: _idFocusNode,
+                        onSubmit: _submitForm,
+                      ),
                     ],
                   ),
                 ),
@@ -65,23 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Connect',
           style: GoogleFonts.play(color: Colors.white),
         ),
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            Navigator.of(context)
-                .push(MaterialPageRoute(
-                  builder: (context) => CallPage(
-                      callID: _idController.text.toString(),
-                      uName: _nameController.text.toString()),
-                ))
-                .then((value) => setState(() {
-                      _nameController.clear();
-                      _idController.clear();
-                    }));
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("Please fill in the form correctly")));
-          }
-        },
+        onPressed: _submitForm,
       ),
     );
   }
@@ -89,7 +109,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget customFormField(
       {TextEditingController? controller,
       String? hintText,
-      String? errorText}) {
+      String? errorText,
+      FocusNode? focusNode,
+      FocusNode? nextFocusNode,
+      VoidCallback? onSubmit}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -99,6 +122,17 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.only(left: 8.0),
           child: TextFormField(
             controller: controller,
+            focusNode: focusNode,
+            textInputAction: nextFocusNode != null
+                ? TextInputAction.next
+                : TextInputAction.done,
+            onFieldSubmitted: (value) {
+              if (nextFocusNode != null) {
+                FocusScope.of(context).requestFocus(nextFocusNode);
+              } else if (onSubmit != null) {
+                onSubmit();
+              }
+            },
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: hintText,
