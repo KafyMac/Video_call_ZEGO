@@ -97,11 +97,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromRGBO(40, 74, 255, 1),
+        onPressed: _submitForm,
         child: Text(
           'Connect',
           style: GoogleFonts.play(color: Colors.white),
         ),
-        onPressed: _submitForm,
       ),
     );
   }
