@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:kaff_video_call/views/home_screen/home_page.dart';
+import 'package:kaff_video_call/views/screens/onboard/onboarding_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
           bodyMedium: GoogleFonts.lato(textStyle: textTheme.bodyMedium),
         ),
       ),
-      home: HomeScreen(),
+      home: const OnBoardingPage(),
     );
   }
 }

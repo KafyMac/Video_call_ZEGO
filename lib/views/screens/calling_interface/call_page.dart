@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kaff_video_call/constant/key.dart';
+import 'package:kaff_video_call/utils/constant/key.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class CallPage extends StatelessWidget {
