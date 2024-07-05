@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
+import 'package:kaff_video_call/models/followers_model/followers_resp.dart';
+import 'package:kaff_video_call/network/api_connection.dart';
+import 'package:kaff_video_call/utils/shared/widgets/snack_bar.dart';
 import 'package:kaff_video_call/views/screens/connect_screen/profile_details_screen/profile_details.dart';
 
 class FollowList extends StatefulWidget {
@@ -11,6 +14,35 @@ class FollowList extends StatefulWidget {
 
 class _FollowListState extends State<FollowList> {
   late bool follow = true;
+  FollowersListResp? follwersList;
+
+  @override
+  void initState() {
+    fetchFollowersList();
+    super.initState();
+  }
+
+  Future<void> fetchFollowersList() async {
+    try {
+      follwersList = await ApiService().followersList();
+      if (follwersList?.status == "Failed") {
+        CustomSnackBar.showSnackBar(
+            context: context,
+            message: "Failed to fetch account",
+            color: Colors.red,
+            icons: Icons.unpublished_outlined);
+      } else {
+        setState(() {});
+      }
+    } catch (error) {
+      CustomSnackBar.showSnackBar(
+          context: context,
+          message: "Error while fetching account",
+          color: Colors.red,
+          icons: Icons.unpublished_outlined);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +54,7 @@ class _FollowListState extends State<FollowList> {
           children: [
             Expanded(
               child: ListView.builder(
-                itemCount: 15,
+                itemCount: follwersList?.data?.length ?? 0,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 16.0),
@@ -42,13 +74,14 @@ class _FollowListState extends State<FollowList> {
                           },
                           child: Row(
                             children: [
-                              const Padding(
-                                padding: EdgeInsets.only(right: 16.0),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 16.0),
                                 child: AdvancedAvatar(
-                                  image: AssetImage("assets/profile.jpeg"),
-                                  name: "Nitesh Chandran",
-                                  style: TextStyle(color: Colors.white),
-                                  decoration: BoxDecoration(
+                                  image:
+                                      const AssetImage("assets/profile.jpeg"),
+                                  name: follwersList?.data?[index].name,
+                                  style: const TextStyle(color: Colors.white),
+                                  decoration: const BoxDecoration(
                                     color: Colors.grey,
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
@@ -61,7 +94,7 @@ class _FollowListState extends State<FollowList> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Name ${index.toString()}",
+                                    follwersList?.data?[index].name ?? "--",
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w900,

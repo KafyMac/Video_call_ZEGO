@@ -17,21 +17,21 @@ class _HomeScreensState extends State<HomeScreens> {
   Widget? currentPages;
   int currentPage = 0;
 
-  ScreenOne() {
+  screenOne() {
     setState(() {
-      currentPages = HomeScreen();
+      currentPages = const HomeScreen();
     });
   }
 
-  ScreenTwo() {
+  screenTwo() {
     setState(() {
       currentPages = ConnectScreen();
     });
   }
 
-  ScreenThree() {
+  screenThree() {
     setState(() {
-      currentPages = MoreScreen();
+      currentPages = const MoreScreen();
     });
   }
 
@@ -42,16 +42,16 @@ class _HomeScreensState extends State<HomeScreens> {
     currentPage = initialPage;
     switch (initialPage) {
       case 0:
-        ScreenOne();
+        screenOne();
         break;
       case 1:
-        ScreenTwo();
+        screenTwo();
         break;
       case 2:
-        ScreenThree();
+        screenThree();
         break;
       default:
-        ScreenOne();
+        screenOne();
     }
   }
 
@@ -66,7 +66,7 @@ class _HomeScreensState extends State<HomeScreens> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Container(
+              SizedBox(
                 height: 60,
                 child: InkWell(
                   child: Container(
@@ -75,7 +75,7 @@ class _HomeScreensState extends State<HomeScreens> {
                           top: BorderSide(
                               width: 2,
                               color: currentPage == 0
-                                  ? Color.fromARGB(255, 83, 0, 98)
+                                  ? const Color.fromARGB(255, 83, 0, 98)
                                   : Colors.white)),
                     ),
                     child: Padding(
@@ -83,11 +83,11 @@ class _HomeScreensState extends State<HomeScreens> {
                       child: Column(
                         children: [
                           currentPage == 0
-                              ? Icon(
+                              ? const Icon(
                                   Icons.home_outlined,
                                   color: Color.fromARGB(255, 83, 0, 98),
                                 )
-                              : Icon(
+                              : const Icon(
                                   Icons.home_outlined,
                                   color: Color.fromRGBO(90, 90, 90, 1),
                                 ),
@@ -97,7 +97,7 @@ class _HomeScreensState extends State<HomeScreens> {
                               "Home",
                               style: TextStyle(
                                   color: currentPage == 0
-                                      ? Color.fromARGB(255, 83, 0, 98)
+                                      ? const Color.fromARGB(255, 83, 0, 98)
                                       : const Color.fromRGBO(90, 90, 90, 1),
                                   fontSize: (13),
                                   fontWeight: FontWeight.w400),
@@ -108,14 +108,14 @@ class _HomeScreensState extends State<HomeScreens> {
                     ),
                   ),
                   onTap: () {
-                    ScreenOne();
+                    screenOne();
                     setState(() {
                       currentPage = 0;
                     });
                   },
                 ),
               ),
-              Container(
+              SizedBox(
                 height: 60,
                 child: InkWell(
                   child: Container(
@@ -124,7 +124,7 @@ class _HomeScreensState extends State<HomeScreens> {
                             top: BorderSide(
                           width: 2,
                           color: currentPage == 1
-                              ? Color.fromARGB(255, 83, 0, 98)
+                              ? const Color.fromARGB(255, 83, 0, 98)
                               : Colors.white,
                         )),
                       ),
@@ -133,11 +133,11 @@ class _HomeScreensState extends State<HomeScreens> {
                         child: Column(
                           children: [
                             currentPage == 1
-                                ? Icon(
+                                ? const Icon(
                                     Icons.connect_without_contact_rounded,
                                     color: Color.fromARGB(255, 83, 0, 98),
                                   )
-                                : Icon(
+                                : const Icon(
                                     Icons.connect_without_contact_rounded,
                                     color: Color.fromRGBO(90, 90, 90, 1),
                                   ),
@@ -147,7 +147,7 @@ class _HomeScreensState extends State<HomeScreens> {
                                 "Connect",
                                 style: TextStyle(
                                     color: currentPage == 1
-                                        ? Color.fromARGB(255, 83, 0, 98)
+                                        ? const Color.fromARGB(255, 83, 0, 98)
                                         : const Color.fromRGBO(90, 90, 90, 1),
                                     fontSize: (13),
                                     fontWeight: FontWeight.w400),
@@ -157,14 +157,14 @@ class _HomeScreensState extends State<HomeScreens> {
                         ),
                       )),
                   onTap: () {
-                    ScreenTwo();
+                    screenTwo();
                     setState(() {
                       currentPage = 1;
                     });
                   },
                 ),
               ),
-              Container(
+              SizedBox(
                 height: 60,
                 child: InkWell(
                   child: Container(
@@ -173,7 +173,7 @@ class _HomeScreensState extends State<HomeScreens> {
                             top: BorderSide(
                                 width: 2,
                                 color: currentPage == 2
-                                    ? Color.fromARGB(255, 83, 0, 98)
+                                    ? const Color.fromARGB(255, 83, 0, 98)
                                     : Colors.white)),
                       ),
                       child: Padding(
@@ -181,11 +181,11 @@ class _HomeScreensState extends State<HomeScreens> {
                         child: Column(
                           children: [
                             currentPage == 2
-                                ? Icon(
+                                ? const Icon(
                                     Icons.account_circle_outlined,
                                     color: Color.fromARGB(255, 83, 0, 98),
                                   )
-                                : Icon(
+                                : const Icon(
                                     Icons.account_circle_outlined,
                                     color: Color.fromRGBO(90, 90, 90, 1),
                                   ),
@@ -195,7 +195,7 @@ class _HomeScreensState extends State<HomeScreens> {
                                 "More",
                                 style: TextStyle(
                                     color: currentPage == 2
-                                        ? Color.fromARGB(255, 83, 0, 98)
+                                        ? const Color.fromARGB(255, 83, 0, 98)
                                         : const Color.fromRGBO(90, 90, 90, 1),
                                     fontSize: (13),
                                     fontWeight: FontWeight.w400),
@@ -205,7 +205,7 @@ class _HomeScreensState extends State<HomeScreens> {
                         ),
                       )),
                   onTap: () {
-                    ScreenThree();
+                    screenThree();
                     setState(() {
                       currentPage = 2;
                     });

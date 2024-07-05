@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kaff_video_call/views/screens/connect_screen/screens/followScreen.dart';
 import 'package:kaff_video_call/views/screens/connect_screen/screens/followingScreen.dart';
+import 'package:kaff_video_call/views/screens/connect_screen/screens/peopleScreen.dart';
 
 class ConnectScreen extends StatefulWidget {
   @override
@@ -73,12 +74,15 @@ class _ConnectScreenState extends State<ConnectScreen> {
           ),
           Stack(
             children: [
-              AnimatedPositioned(
+              AnimatedAlign(
                 duration: const Duration(milliseconds: 300),
-                left: isActive ? MediaQuery.of(context).size.width * 0.55 : 20,
-                right: isActive ? 20 : MediaQuery.of(context).size.width * 0.55,
+                alignment: _selectedIndex == 0
+                    ? Alignment.centerLeft
+                    : _selectedIndex == 1
+                        ? Alignment.center
+                        : Alignment.centerRight,
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.3,
                   height: 50,
                   decoration: const BoxDecoration(
                     border: Border(
@@ -95,7 +99,24 @@ class _ConnectScreenState extends State<ConnectScreen> {
                   GestureDetector(
                     onTap: () => _onItemTapped(0),
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
+                      width: MediaQuery.of(context).size.width * 0.33,
+                      height: 50,
+                      child: const Center(
+                        child: Text(
+                          "People",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _onItemTapped(1),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.33,
                       height: 50,
                       child: const Center(
                         child: Text(
@@ -110,9 +131,9 @@ class _ConnectScreenState extends State<ConnectScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => _onItemTapped(1),
+                    onTap: () => _onItemTapped(2),
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
+                      width: MediaQuery.of(context).size.width * 0.33,
                       height: 50,
                       child: const Center(
                         child: Text(
@@ -134,6 +155,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
             child: IndexedStack(
               index: _selectedIndex,
               children: const [
+                PeopleList(),
                 FollowList(),
                 FollowingList(),
               ],

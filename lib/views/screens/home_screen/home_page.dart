@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
+import 'package:kaff_video_call/views/screens/connect_screen/connect_page.dart';
 import 'package:kaff_video_call/views/screens/connect_screen/profile_details_screen/profile_details.dart';
 import 'package:kaff_video_call/views/screens/home_screen/join_room/join_room_page.dart';
 import 'package:kaff_video_call/views/screens/home_screen/liveStreamList/liveStreamList.dart';
@@ -24,10 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     "Following",
                     style: TextStyle(
                       color: Colors.white,
@@ -35,12 +36,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontSize: 22,
                     ),
                   ),
-                  Text(
-                    "MORE",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w100,
-                      fontSize: 12,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ConnectScreen(),
+                          ));
+                    },
+                    child: const Text(
+                      "MORE",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w100,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ],
@@ -220,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           width: 2, color: Colors.white),
                                       borderRadius: BorderRadius.circular(16)),
                                   width: 100,
-                                  height: 50,
+                                  height: 40,
                                   child: const Center(
                                     child: Text(
                                       "Watch",

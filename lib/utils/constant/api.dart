@@ -1,5 +1,5 @@
 class URL {
-  static const String devBaseUrl = "http://localhost:3000/";
+  static const String devBaseUrl = "https://zego-app-node-js-exp.vercel.app/";
 
   static const String baseBathUrl = devBaseUrl;
 }
@@ -7,4 +7,7 @@ class URL {
 class UrlPath {
   static const String apiLogin = "admin/login";
   static const String apiSignUp = "add/user";
+  static const String apiFollowingList = "admin/get/following";
+  static const String apiFollowersList = "admin/get/followers";
+  static const String apiPeopleList = "admin/get/notFollowing";
 }

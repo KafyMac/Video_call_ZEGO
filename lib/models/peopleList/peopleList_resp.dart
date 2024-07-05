@@ -1,21 +1,22 @@
 import 'dart:convert';
 
-LoginResp loginRespFromJson(String str) => LoginResp.fromJson(json.decode(str));
+PeopleListResp peopleListRespFromJson(String str) =>
+    PeopleListResp.fromJson(json.decode(str));
 
-String loginRespToJson(LoginResp data) => json.encode(data.toJson());
+String peopleListRespToJson(PeopleListResp data) => json.encode(data.toJson());
 
-class LoginResp {
+class PeopleListResp {
   String? status;
   String? message;
   Data? data;
 
-  LoginResp({
+  PeopleListResp({
     this.status,
     this.message,
     this.data,
   });
 
-  factory LoginResp.fromJson(Map<String, dynamic> json) => LoginResp(
+  factory PeopleListResp.fromJson(Map<String, dynamic> json) => PeopleListResp(
         status: json["status"],
         message: json["message"],
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
@@ -29,45 +30,53 @@ class LoginResp {
 }
 
 class Data {
-  String? token;
-  User? user;
+  List<User>? users;
+  int? total;
 
   Data({
-    this.token,
-    this.user,
+    this.users,
+    this.total,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        token: json["token"],
-        user: json["user"] == null ? null : User.fromJson(json["user"]),
+        users: json["users"] == null
+            ? []
+            : List<User>.from(json["users"]!.map((x) => User.fromJson(x))),
+        total: json["total"],
       );
 
   Map<String, dynamic> toJson() => {
-        "token": token,
-        "user": user?.toJson(),
+        "users": users == null
+            ? []
+            : List<dynamic>.from(users!.map((x) => x.toJson())),
+        "total": total,
       };
 }
 
 class User {
+  String? id;
   String? name;
-  String? email;
   String? mobileNumber;
+  String? email;
 
   User({
+    this.id,
     this.name,
-    this.email,
     this.mobileNumber,
+    this.email,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json["_id"],
         name: json["name"],
-        email: json["email"],
         mobileNumber: json["mobileNumber"],
+        email: json["email"],
       );
 
   Map<String, dynamic> toJson() => {
+        "_id": id,
         "name": name,
-        "email": email,
         "mobileNumber": mobileNumber,
+        "email": email,
       };
 }

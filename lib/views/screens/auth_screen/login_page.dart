@@ -4,6 +4,7 @@ import 'package:kaff_video_call/models/login_model/login_resp.dart';
 import 'package:kaff_video_call/network/api_connection.dart';
 import 'package:kaff_video_call/utils/shared/widgets/buttons.dart';
 import 'package:kaff_video_call/utils/shared/widgets/snack_bar.dart';
+import 'package:kaff_video_call/utils/shared_preference/pref_utils.dart';
 import 'package:kaff_video_call/views/screens/auth_screen/signUp_page.dart';
 import 'package:kaff_video_call/views/screens/bottomNavbar/bottomnavbar_screen.dart';
 
@@ -69,7 +70,10 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _isLoading = false;
         });
-        if (resp.message == "Success") {
+        print("response: ${resp.toJson()}");
+        if (resp.status == "Success") {
+          String token = resp.data!.token!;
+          PrefUtils().saveUserToken(token);
           CustomSnackBar.showSnackBar(
               context: context,
               message: "Logged in Successfully",
@@ -156,7 +160,6 @@ class _LoginPageState extends State<LoginPage> {
                             errorText: "Please enter the password",
                             focusNode: _passwordFocusNode,
                             obscureText: true,
-                            onSubmit: null,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0),
@@ -174,15 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: _isLoading
                                   ? const CircularProgressIndicator()
                                   : button(
-                                      // onPressed: login,
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  HomeScreens(),
-                                            ));
-                                      },
+                                      onPressed: login,
                                       title: "Log in",
                                       width: MediaQuery.of(context).size.width *
                                           0.8,
