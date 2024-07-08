@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
+import 'package:kaff_video_call/views/screens/connect_screen/profile_details_screen/profile_details.dart';
+import 'package:kaff_video_call/views/screens/home_screen/join_room/join_room_page.dart';
 
 class LiveStreamScreen extends StatefulWidget {
   const LiveStreamScreen({super.key});
@@ -108,7 +110,7 @@ class _LiveStreamScreenState extends State<LiveStreamScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const AdvancedAvatar(
-                                // image: AssetImage("assets/profile.jpeg"),
+                                image: AssetImage("assets/profile.jpeg"),
                                 name: "Nitesh Chandran",
                                 style: TextStyle(color: Colors.white),
                                 decoration: BoxDecoration(
@@ -137,12 +139,49 @@ class _LiveStreamScreenState extends State<LiveStreamScreen> {
                                   ],
                                 ),
                               ),
-                              TextButton(
-                                  onPressed: () {},
-                                  child: const Icon(
-                                    Icons.more_vert_rounded,
-                                    color: Colors.white,
-                                  ))
+                              PopupMenuButton<String>(
+                                color: Colors.black,
+                                elevation: 2,
+                                icon: const Icon(
+                                  Icons.more_vert_rounded,
+                                  color: Colors.white,
+                                ),
+                                onSelected: (String result) {
+                                  setState(() {
+                                    if (result == "Join") {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const JoinRoom(),
+                                          ));
+                                    } else {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const ProfileDetailsScreen(),
+                                          ));
+                                    }
+                                  });
+                                },
+                                itemBuilder: (BuildContext context) => [
+                                  const PopupMenuItem<String>(
+                                    value: 'Join',
+                                    child: Text(
+                                      'Join Room',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'Profile',
+                                    child: Text(
+                                      'Profile',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         )

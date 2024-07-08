@@ -9,7 +9,6 @@ class PrefUtils {
   }
 
   //storing logged in user
-
   String loggedIn = 'loggedIn';
 
   static const String tokenKey = 'userToken';

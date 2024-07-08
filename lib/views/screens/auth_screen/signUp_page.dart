@@ -81,11 +81,13 @@ class _SignUpPageState extends State<SignUpPage> {
               message: "Account created Successfully",
               color: Colors.green,
               icons: Icons.unpublished_outlined);
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const LoginPage(),
-              ));
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginPage(),
+            ),
+            (route) => false,
+          );
         } else {
           CustomSnackBar.showSnackBar(
               context: context,

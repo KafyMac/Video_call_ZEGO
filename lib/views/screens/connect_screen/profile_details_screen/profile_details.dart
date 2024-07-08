@@ -25,7 +25,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
               floating: false,
               pinned: false,
               flexibleSpace: FlexibleSpaceBar(
-                title: Text("Nitesh Chandran"),
+                title: const Text("Nitesh Chandran"),
                 background: Stack(
                   fit: StackFit.expand,
                   children: [

@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
-import 'package:kaff_video_call/models/following_list_model/following_resp.dart';
-import 'package:kaff_video_call/models/unfollow_model/unfollow_req.dart';
-import 'package:kaff_video_call/models/unfollow_model/unfollow_resp.dart';
+import 'package:kaff_video_call/models/Follow_model/follow_req.dart';
+import 'package:kaff_video_call/models/Follow_model/follow_resp.dart';
+import 'package:kaff_video_call/models/followers_model/followers_resp.dart';
 import 'package:kaff_video_call/network/api_connection.dart';
 import 'package:kaff_video_call/utils/shared/widgets/snack_bar.dart';
 import 'package:kaff_video_call/views/screens/connect_screen/profile_details_screen/profile_details.dart';
 
-class FollowingList extends StatefulWidget {
-  const FollowingList({super.key});
+class FollowersList extends StatefulWidget {
+  const FollowersList({super.key});
 
   @override
-  State<FollowingList> createState() => _FollowingListState();
+  State<FollowersList> createState() => _FollowersListState();
 }
 
-class _FollowingListState extends State<FollowingList> {
-  List<Datum>? followingList = [];
+class _FollowersListState extends State<FollowersList> {
+  late bool follow = true;
+  FollowersListResp? followersList;
   Map<String, bool> _isLoadingMap = {};
 
   @override
@@ -26,18 +27,19 @@ class _FollowingListState extends State<FollowingList> {
 
   Future<void> fetchFollowersList() async {
     try {
-      FollowingListResp? resp = await ApiService().followingList();
-      if (resp.status == "Success") {
-        setState(() {
-          followingList = resp.data;
-          _isLoadingMap = {for (var user in resp.data!) user.id!: false};
-        });
-      } else {
+      followersList = await ApiService().followersList();
+      if (followersList?.status == "Failed") {
         CustomSnackBar.showSnackBar(
             context: context,
             message: "Failed to fetch account",
             color: Colors.red,
             icons: Icons.unpublished_outlined);
+      } else {
+        setState(() {
+          _isLoadingMap = {
+            for (var user in followersList!.data!) user.id!: false
+          };
+        });
       }
     } catch (error) {
       CustomSnackBar.showSnackBar(
@@ -48,32 +50,32 @@ class _FollowingListState extends State<FollowingList> {
     }
   }
 
-  Future<void> unFollowUser(String? id) async {
+  Future<void> followUser(String? id) async {
     setState(() {
       _isLoadingMap[id!] = true;
     });
 
-    var req = UnfolloweReq(userIdToUnfollow: id);
+    var req = FolloweReq(userIdToFollow: id);
     try {
-      UnfolloweResp? resp = await ApiService().unFollowUser(req);
+      FolloweResp? resp = await ApiService().followUser(req);
       if (resp.status == "Success") {
         fetchFollowersList();
         CustomSnackBar.showSnackBar(
             context: context,
-            message: "Un-Followed",
+            message: "Following",
             color: Colors.green,
             icons: Icons.unpublished_outlined);
       } else {
         CustomSnackBar.showSnackBar(
             context: context,
-            message: "Failed to un-follow",
+            message: "Failed to follow",
             color: Colors.red,
             icons: Icons.unpublished_outlined);
       }
     } catch (error) {
       CustomSnackBar.showSnackBar(
           context: context,
-          message: "Error while Un-Following",
+          message: "Error while Following",
           color: Colors.red,
           icons: Icons.unpublished_outlined);
     } finally {
@@ -89,43 +91,36 @@ class _FollowingListState extends State<FollowingList> {
       backgroundColor: const Color.fromARGB(255, 16, 16, 16),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: followingList!.isEmpty
-            ? const Center(
-                child: Text(
-                  "You are not following any one",
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: followingList?.length ?? 0,
-                      itemBuilder: (context, index) {
-                        return followingContainer(
-                          context,
-                          index: index,
-                          name: followingList?[index].name ?? "--",
-                          isLoading:
-                              _isLoadingMap[followingList?[index].id] ?? false,
-                          onTap: () {
-                            unFollowUser(followingList?[index].id);
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: followersList?.data?.length ?? 0,
+                itemBuilder: (context, index) {
+                  final user = followersList?.data?[index];
+                  return followersContainer(
+                    context,
+                    index: index,
+                    name: user?.name ?? "--",
+                    isLoading: _isLoadingMap[user?.id] ?? false,
+                    onTap: () {
+                      followUser(user?.id);
+                    },
+                  );
+                },
               ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget followingContainer(
+  Padding followersContainer(
     BuildContext context, {
     required int index,
-    String? name,
+    required String name,
     required bool isLoading,
     required void Function()? onTap,
   }) {
@@ -164,7 +159,7 @@ class _FollowingListState extends State<FollowingList> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name ?? "--",
+                      name,
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
@@ -186,31 +181,41 @@ class _FollowingListState extends State<FollowingList> {
           ),
           GestureDetector(
             onTap: onTap,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(16)),
-              width: 100,
-              height: 40,
-              child: Center(
-                child: !isLoading
-                    ? const Text(
-                        "Unfollow",
+            child: !isLoading
+                ? Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(width: 2, color: Colors.white),
+                        borderRadius: BorderRadius.circular(16)),
+                    width: 100,
+                    height: 40,
+                    child: const Center(
+                      child: Text(
+                        "Follow",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  )
+                : Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16)),
+                    width: 100,
+                    height: 40,
+                    child: const Center(
+                      child: Text(
+                        "Following",
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w900,
                           fontSize: 16,
                         ),
-                      )
-                    : const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.black,
-                          strokeWidth: 1,
-                        ),
                       ),
-              ),
-            ),
+                    ),
+                  ),
           ),
         ],
       ),

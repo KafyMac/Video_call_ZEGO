@@ -70,7 +70,6 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _isLoading = false;
         });
-        print("response: ${resp.toJson()}");
         if (resp.status == "Success") {
           String token = resp.data!.token!;
           PrefUtils().saveUserToken(token);
@@ -260,6 +259,8 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             elevation: 0,
             color: Colors.grey[900],
             child: Padding(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
+import 'package:kaff_video_call/utils/shared/widgets/popups.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -69,11 +70,11 @@ class _MoreScreenState extends State<MoreScreen> {
                 ],
               ),
             ),
-            const Divider(),
+            const Divider(color: Colors.white),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: GestureDetector(
-                onTap: () {},
+                onTap: () => CommonDialog().logout(context),
                 child: const Text(
                   "Logout",
                   style: TextStyle(

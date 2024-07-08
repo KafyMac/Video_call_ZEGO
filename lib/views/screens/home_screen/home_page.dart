@@ -214,8 +214,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         "Streaming Now - Live${index.toString()}",
                                         style: const TextStyle(
                                           color: Colors.white,
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 18,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 16,
                                         ),
                                       ),
                                     ],

@@ -7,7 +7,7 @@ String loginRespToJson(LoginResp data) => json.encode(data.toJson());
 class LoginResp {
   String? status;
   String? message;
-  Data? data;
+  LoginData? data;
 
   LoginResp({
     this.status,
@@ -18,7 +18,7 @@ class LoginResp {
   factory LoginResp.fromJson(Map<String, dynamic> json) => LoginResp(
         status: json["status"],
         message: json["message"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        data: json["data"] == null ? null : LoginData.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -28,16 +28,16 @@ class LoginResp {
       };
 }
 
-class Data {
+class LoginData {
   String? token;
   User? user;
 
-  Data({
+  LoginData({
     this.token,
     this.user,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory LoginData.fromJson(Map<String, dynamic> json) => LoginData(
         token: json["token"],
         user: json["user"] == null ? null : User.fromJson(json["user"]),
       );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
+import 'package:kaff_video_call/models/Follow_model/follow_req.dart';
+import 'package:kaff_video_call/models/Follow_model/follow_resp.dart';
 import 'package:kaff_video_call/models/peopleList/peopleList_resp.dart';
 import 'package:kaff_video_call/network/api_connection.dart';
 import 'package:kaff_video_call/utils/shared/widgets/snack_bar.dart';
@@ -13,8 +15,8 @@ class PeopleList extends StatefulWidget {
 }
 
 class _PeopleListState extends State<PeopleList> {
-  late bool follow = true;
   PeopleListResp? peopleList;
+  Map<String, bool> _isLoadingMap = {};
 
   @override
   void initState() {
@@ -32,7 +34,11 @@ class _PeopleListState extends State<PeopleList> {
             color: Colors.red,
             icons: Icons.unpublished_outlined);
       } else {
-        setState(() {});
+        setState(() {
+          _isLoadingMap = {
+            for (var user in peopleList!.data!.users!) user.id!: false
+          };
+        });
       }
     } catch (error) {
       CustomSnackBar.showSnackBar(
@@ -40,6 +46,41 @@ class _PeopleListState extends State<PeopleList> {
           message: "Error while fetching account",
           color: Colors.red,
           icons: Icons.unpublished_outlined);
+    }
+  }
+
+  Future<void> followUser(String? id) async {
+    setState(() {
+      _isLoadingMap[id!] = true;
+    });
+
+    var req = FolloweReq(userIdToFollow: id);
+    try {
+      FolloweResp? resp = await ApiService().followUser(req);
+      if (resp.status == "Success") {
+        fetchFollowersList();
+        CustomSnackBar.showSnackBar(
+            context: context,
+            message: "Following",
+            color: Colors.green,
+            icons: Icons.unpublished_outlined);
+      } else {
+        CustomSnackBar.showSnackBar(
+            context: context,
+            message: "Failed to follow",
+            color: Colors.red,
+            icons: Icons.unpublished_outlined);
+      }
+    } catch (error) {
+      CustomSnackBar.showSnackBar(
+          context: context,
+          message: "Error while Following",
+          color: Colors.red,
+          icons: Icons.unpublished_outlined);
+    } finally {
+      setState(() {
+        _isLoadingMap[id!] = false;
+      });
     }
   }
 
@@ -56,14 +97,16 @@ class _PeopleListState extends State<PeopleList> {
               child: ListView.builder(
                 itemCount: peopleList?.data?.users?.length ?? 0,
                 itemBuilder: (context, index) {
-                  return peopleListCard(context,
-                      index: index,
-                      name: peopleList?.data?.users?[index].name ?? "--",
-                      onTap: () {
-                    setState(() {
-                      follow = false;
-                    });
-                  });
+                  final user = peopleList?.data?.users?[index];
+                  return peopleListCard(
+                    context,
+                    index: index,
+                    name: user?.name ?? "--",
+                    isLoading: _isLoadingMap[user?.id] ?? false,
+                    onTap: () {
+                      followUser(user?.id);
+                    },
+                  );
                 },
               ),
             ),
@@ -73,11 +116,12 @@ class _PeopleListState extends State<PeopleList> {
     );
   }
 
-  Padding peopleListCard(
+  Widget peopleListCard(
     BuildContext context, {
-    int? index,
-    String? name,
-    void Function()? onTap,
+    required int index,
+    required String name,
+    required bool isLoading,
+    required void Function()? onTap,
   }) {
     return Padding(
       padding: const EdgeInsets.only(top: 16.0),
@@ -114,19 +158,19 @@ class _PeopleListState extends State<PeopleList> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name ?? "--",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      "Streaming ${index.toString()}",
+                      name,
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
                         fontSize: 18,
+                      ),
+                    ),
+                    Text(
+                      "Streaming $index",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
                       ),
                     ),
                   ],
@@ -136,41 +180,33 @@ class _PeopleListState extends State<PeopleList> {
           ),
           GestureDetector(
             onTap: onTap,
-            child: follow
-                ? Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 2, color: Colors.white),
-                        borderRadius: BorderRadius.circular(16)),
-                    width: 100,
-                    height: 40,
-                    child: const Center(
-                      child: Text(
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(width: 2, color: Colors.white),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              width: 100,
+              height: 40,
+              child: Center(
+                child: !isLoading
+                    ? const Text(
                         "Follow",
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
                           fontSize: 16,
                         ),
-                      ),
-                    ),
-                  )
-                : Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16)),
-                    width: 100,
-                    height: 40,
-                    child: const Center(
-                      child: Text(
-                        "Following",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 16,
+                      )
+                    : const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 1,
                         ),
                       ),
-                    ),
-                  ),
+              ),
+            ),
           ),
         ],
       ),
