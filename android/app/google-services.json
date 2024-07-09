@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "97393137824",
+    "project_id": "zego-e33a6",
+    "storage_bucket": "zego-e33a6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:97393137824:android:2517076c45c4d7f73411c5",
+        "android_client_info": {
+          "package_name": "com.example.kaff_video_call"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxSoCtSXd7NPaQXES-EKYrMDwOen5WsIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
