@@ -11,6 +11,7 @@ import 'package:kaff_video_call/views/screens/bottomNavbar/bottomnavbar_screen.d
 import 'package:kaff_video_call/views/screens/message_screen/message_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -18,6 +19,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();
+final PushNotifications _notificationService = PushNotifications();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -29,11 +32,8 @@ void main() async {
               messagingSenderId: "97393137824",
               projectId: 'zego-e33a6'))
       : await Firebase.initializeApp();
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  print("fcmToken: $fcmToken");
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
   PushNotifications.init();
   PushNotifications.localNotiInit();
 
@@ -41,6 +41,7 @@ void main() async {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     String payloadData = jsonEncode(message.data);
     print("Got a message in foreground");
+    print("message ${message}");
     if (message.notification != null) {
       PushNotifications.showSimpleNotification(
           title: message.notification!.title!,
@@ -49,7 +50,9 @@ void main() async {
     }
   });
 
+  // ZegoUIKit().initLog().then((value) {
   runApp(const MyApp());
+  // });
 }
 
 class MyApp extends StatelessWidget {

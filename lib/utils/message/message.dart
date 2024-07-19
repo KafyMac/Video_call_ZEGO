@@ -19,33 +19,24 @@ class PushNotifications {
     );
   }
 
-// // get the fcm device token
-//   static Future getFCMToken({int maxRetires = 3}) async {
-//     try {
-//       String? token;
-//       if (kIsWeb) {
-//         // get the device fcm token
-//         token = await _firebaseMessaging.getToken(
-//             vapidKey:
-//                 "BJzRufH-VxRc7wLunA6WOaf-gVurFKhDluPRFB8644PQHw6OfWH8uzybtYsFBTA326_yy3PEG-L7OK_ojVsMmrI");
-//         print("for web device token: $token");
-//       } else {
-//         // get the device fcm token
-//         token = await _firebaseMessaging.getToken();
-//         print("for android device token: $token");
-//       }
-//       return token;
-//     } catch (e) {
-//       print("failed to get device token");
-//       if (maxRetires > 0) {
-//         print("try after 10 sec");
-//         await Future.delayed(Duration(seconds: 10));
-//         return getFCMToken(maxRetires: maxRetires - 1);
-//       } else {
-//         return null;
-//       }
-//     }
-//   }
+// get the fcm device token
+  Future<String?> getFcmToken() async {
+    // Request permission for iOS
+    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      // Get the FCM token
+      String? fcmToken = await _firebaseMessaging.getToken();
+      return fcmToken;
+    } else {
+      // Handle the case where the user denied permission
+      return null;
+    }
+  }
 
 // initalize local notifications
   static Future localNotiInit() async {

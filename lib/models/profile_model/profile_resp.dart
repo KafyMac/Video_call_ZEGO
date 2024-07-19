@@ -1,22 +1,24 @@
 import 'dart:convert';
 
-CreateUserResp createUserRespFromJson(String str) =>
-    CreateUserResp.fromJson(json.decode(str));
+GetMyProfileResp getMyProfileRespFromJson(String str) =>
+    GetMyProfileResp.fromJson(json.decode(str));
 
-String createUserRespToJson(CreateUserResp data) => json.encode(data.toJson());
+String getMyProfileRespToJson(GetMyProfileResp data) =>
+    json.encode(data.toJson());
 
-class CreateUserResp {
+class GetMyProfileResp {
   String? status;
   String? message;
   Data? data;
 
-  CreateUserResp({
+  GetMyProfileResp({
     this.status,
     this.message,
     this.data,
   });
 
-  factory CreateUserResp.fromJson(Map<String, dynamic> json) => CreateUserResp(
+  factory GetMyProfileResp.fromJson(Map<String, dynamic> json) =>
+      GetMyProfileResp(
         status: json["status"],
         message: json["message"],
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
@@ -46,29 +48,49 @@ class Data {
 }
 
 class User {
+  String? id;
   String? name;
-  String? email;
   String? mobileNumber;
+  String? email;
   String? fcmToken;
+  List<dynamic>? followers;
+  List<dynamic>? following;
 
   User({
+    this.id,
     this.name,
-    this.email,
     this.mobileNumber,
+    this.email,
     this.fcmToken,
+    this.followers,
+    this.following,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json["_id"],
         name: json["name"],
-        email: json["email"],
         mobileNumber: json["mobileNumber"],
+        email: json["email"],
         fcmToken: json["fcmToken"],
+        followers: json["followers"] == null
+            ? []
+            : List<dynamic>.from(json["followers"]!.map((x) => x)),
+        following: json["following"] == null
+            ? []
+            : List<dynamic>.from(json["following"]!.map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
+        "_id": id,
         "name": name,
-        "email": email,
         "mobileNumber": mobileNumber,
+        "email": email,
         "fcmToken": fcmToken,
+        "followers": followers == null
+            ? []
+            : List<dynamic>.from(followers!.map((x) => x)),
+        "following": following == null
+            ? []
+            : List<dynamic>.from(following!.map((x) => x)),
       };
 }

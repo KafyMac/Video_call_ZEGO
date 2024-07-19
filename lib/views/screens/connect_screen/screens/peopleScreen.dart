@@ -90,28 +90,35 @@ class _PeopleListState extends State<PeopleList> {
       backgroundColor: const Color.fromARGB(255, 16, 16, 16),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: peopleList?.data?.users?.length ?? 0,
-                itemBuilder: (context, index) {
-                  final user = peopleList?.data?.users?[index];
-                  return peopleListCard(
-                    context,
-                    index: index,
-                    name: user?.name ?? "--",
-                    isLoading: _isLoadingMap[user?.id] ?? false,
-                    onTap: () {
-                      followUser(user?.id);
-                    },
-                  );
-                },
+        child: peopleList != null && peopleList!.data!.users!.isEmpty
+            ? const Center(
+                child: Text(
+                  "You are not followed by any one",
+                  style: TextStyle(color: Colors.white),
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: peopleList?.data?.users?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final user = peopleList?.data?.users?[index];
+                        return peopleListCard(
+                          context,
+                          index: index,
+                          name: user?.name ?? "--",
+                          isLoading: _isLoadingMap[user?.id] ?? false,
+                          onTap: () {
+                            followUser(user?.id);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }

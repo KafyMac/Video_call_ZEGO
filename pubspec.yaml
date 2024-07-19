@@ -48,6 +48,7 @@ dependencies:
   firebase_core: ^3.1.1
   firebase_messaging: ^15.0.2
   flutter_local_notifications: ^17.2.1+1
+  zego_uikit_prebuilt_live_streaming: ^3.8.9
 
 
 dev_dependencies:

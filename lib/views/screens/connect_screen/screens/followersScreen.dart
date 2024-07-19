@@ -91,28 +91,35 @@ class _FollowersListState extends State<FollowersList> {
       backgroundColor: const Color.fromARGB(255, 16, 16, 16),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: followersList?.data?.length ?? 0,
-                itemBuilder: (context, index) {
-                  final user = followersList?.data?[index];
-                  return followersContainer(
-                    context,
-                    index: index,
-                    name: user?.name ?? "--",
-                    isLoading: _isLoadingMap[user?.id] ?? false,
-                    onTap: () {
-                      followUser(user?.id);
-                    },
-                  );
-                },
+        child: followersList != null && followersList!.data!.isEmpty
+            ? const Center(
+                child: Text(
+                  "You are not followed by any one",
+                  style: TextStyle(color: Colors.white),
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: followersList?.data?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final user = followersList?.data?[index];
+                        return followersContainer(
+                          context,
+                          index: index,
+                          name: user?.name ?? "--",
+                          isLoading: _isLoadingMap[user?.id] ?? false,
+                          onTap: () {
+                            followUser(user?.id);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }

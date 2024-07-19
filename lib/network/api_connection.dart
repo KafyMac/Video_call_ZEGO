@@ -5,6 +5,8 @@ import 'package:kaff_video_call/models/create_user_model/create_resp.dart';
 import 'package:kaff_video_call/models/followers_model/followers_resp.dart';
 import 'package:kaff_video_call/models/following_list_model/following_resp.dart';
 import 'package:kaff_video_call/models/peopleList/peopleList_resp.dart';
+import 'package:kaff_video_call/models/profile_model/profile_resp.dart';
+import 'package:kaff_video_call/models/stream_model/getStreamResp.dart';
 import 'package:kaff_video_call/models/unfollow_model/unfollow_resp.dart';
 import 'package:kaff_video_call/utils/constant/api.dart';
 import 'package:kaff_video_call/models/login_model/login_resp.dart';
@@ -174,6 +176,34 @@ class ApiService {
       }
     } catch (error) {
       throw Exception('Failed to login: $error');
+    }
+  }
+
+  Future<GetAllStreamResp> getAllStreams() async {
+    final headers = await createHeaders();
+    try {
+      final response = await dio.get(
+        URL.baseBathUrl + UrlPath.apiGetAllStreams,
+        options: Options(validateStatus: (_) => true, headers: headers),
+      );
+      final value = GetAllStreamResp.fromJson(response.data);
+      return value;
+    } catch (e) {
+      throw Exception('Failed to get all streams data: $e');
+    }
+  }
+
+  Future<GetMyProfileResp> getMyProfile() async {
+    final headers = await createHeaders();
+    try {
+      final response = await dio.get(
+        URL.baseBathUrl + UrlPath.apiMyProfile,
+        options: Options(validateStatus: (_) => true, headers: headers),
+      );
+      final value = GetMyProfileResp.fromJson(response.data);
+      return value;
+    } catch (e) {
+      throw Exception('Failed to get all streams data: $e');
     }
   }
 }

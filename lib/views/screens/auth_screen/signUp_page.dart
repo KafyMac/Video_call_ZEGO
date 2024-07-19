@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kaff_video_call/models/create_user_model/create_req.dart';
 import 'package:kaff_video_call/models/create_user_model/create_resp.dart';
 import 'package:kaff_video_call/network/api_connection.dart';
+import 'package:kaff_video_call/utils/message/message.dart';
 import 'package:kaff_video_call/utils/shared/widgets/buttons.dart';
 import 'package:kaff_video_call/utils/shared/widgets/snack_bar.dart';
 import 'package:kaff_video_call/views/screens/auth_screen/login_page.dart';
@@ -63,19 +64,21 @@ class _SignUpPageState extends State<SignUpPage> {
       setState(() {
         _isLoading = true;
       });
+      final PushNotifications _notificationService = PushNotifications();
+      String? fcmToken = await _notificationService.getFcmToken();
 
       var req = CreateUserReq(
-        name: _nameController.text,
-        mobileNumber: _mobileNumberController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
+          name: _nameController.text,
+          mobileNumber: _mobileNumberController.text,
+          email: _emailController.text,
+          password: _passwordController.text,
+          fcmToken: fcmToken);
       try {
         CreateUserResp? resp = await ApiService().createUser(req);
         setState(() {
           _isLoading = false;
         });
-        if (resp.success == "Success") {
+        if (resp.status == "Success") {
           CustomSnackBar.showSnackBar(
               context: context,
               message: "Account created Successfully",
@@ -112,22 +115,22 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.center,
-              colors: [
-                Color.fromARGB(255, 83, 0, 98),
-                Color.fromARGB(255, 0, 0, 0)
-              ],
-            ),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.center,
+            colors: [
+              Color.fromARGB(255, 83, 0, 98),
+              Color.fromARGB(255, 0, 0, 0)
+            ],
           ),
-          child: Form(
-            key: _formKey,
+        ),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [

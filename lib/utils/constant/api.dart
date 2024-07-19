@@ -1,7 +1,7 @@
 class URL {
-  static const String devBaseUrl = "https://zego-app-node-js-exp.vercel.app/";
+  static const String prodBaseUrl = "https://zego-app-node-js-exp.vercel.app/";
 
-  static const String baseBathUrl = devBaseUrl;
+  static const String baseBathUrl = prodBaseUrl;
 }
 
 class UrlPath {
@@ -12,4 +12,6 @@ class UrlPath {
   static const String apiPeopleList = "admin/get/notFollowing";
   static const String apiFollowUser = "admin/follow";
   static const String apiUnFollowUser = "admin/unfollow";
+  static const String apiGetAllStreams = "admin/getAllStreams";
+  static const String apiMyProfile = "admin/get/profile";
 }

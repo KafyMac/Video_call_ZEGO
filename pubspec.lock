@@ -414,6 +414,11 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.2.0"
+  flutter_localizations:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_logs:
     dependency: transitive
     description:
@@ -438,6 +443,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.1"
+  flutter_styled_toast:
+    dependency: transitive
+    description:
+      name: flutter_styled_toast
+      sha256: e667f13a665820eb0fa8506547e47eacbcddf1948d6d3036cfd3b089bd4b0516
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -488,6 +501,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.18.1"
   introduction_screen:
     dependency: "direct main"
     description:
@@ -1057,10 +1078,10 @@ packages:
     dependency: transitive
     description:
       name: zego_uikit
-      sha256: a5dcdbef47c4e170f821d8d5b305703dac2a4e3c79a67d70ad89690d73736de5
+      sha256: "2f7d22fa5ca337977d425556a504d70a7230045ac62d2aafeb720e618e0b2a13"
       url: "https://pub.dev"
     source: hosted
-    version: "2.24.1"
+    version: "2.24.2"
   zego_uikit_prebuilt_call:
     dependency: "direct main"
     description:
@@ -1069,6 +1090,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.12.8"
+  zego_uikit_prebuilt_live_streaming:
+    dependency: "direct main"
+    description:
+      name: zego_uikit_prebuilt_live_streaming
+      sha256: "1998fdff01a0ef401c7a39e15c4417a31c0776575d28d204131f914d7dd70092"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.8.9"
   zego_uikit_signaling_plugin:
     dependency: transitive
     description:
