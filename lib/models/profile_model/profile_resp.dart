@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final getMyProfileResp = getMyProfileRespFromJson(jsonString);
+
 import 'dart:convert';
 
 GetMyProfileResp getMyProfileRespFromJson(String str) =>
@@ -33,17 +37,25 @@ class GetMyProfileResp {
 
 class Data {
   User? user;
+  List<String>? otherUsersFcmTokens;
 
   Data({
     this.user,
+    this.otherUsersFcmTokens,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         user: json["user"] == null ? null : User.fromJson(json["user"]),
+        otherUsersFcmTokens: json["otherUsersFcmTokens"] == null
+            ? []
+            : List<String>.from(json["otherUsersFcmTokens"]!.map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
         "user": user?.toJson(),
+        "otherUsersFcmTokens": otherUsersFcmTokens == null
+            ? []
+            : List<dynamic>.from(otherUsersFcmTokens!.map((x) => x)),
       };
 }
 
@@ -52,7 +64,7 @@ class User {
   String? name;
   String? mobileNumber;
   String? email;
-  String? fcmToken;
+  List<dynamic>? fcmTokens;
   List<dynamic>? followers;
   List<dynamic>? following;
 
@@ -61,7 +73,7 @@ class User {
     this.name,
     this.mobileNumber,
     this.email,
-    this.fcmToken,
+    this.fcmTokens,
     this.followers,
     this.following,
   });
@@ -71,7 +83,9 @@ class User {
         name: json["name"],
         mobileNumber: json["mobileNumber"],
         email: json["email"],
-        fcmToken: json["fcmToken"],
+        fcmTokens: json["fcmTokens"] == null
+            ? []
+            : List<dynamic>.from(json["fcmTokens"]!.map((x) => x)),
         followers: json["followers"] == null
             ? []
             : List<dynamic>.from(json["followers"]!.map((x) => x)),
@@ -85,7 +99,9 @@ class User {
         "name": name,
         "mobileNumber": mobileNumber,
         "email": email,
-        "fcmToken": fcmToken,
+        "fcmTokens": fcmTokens == null
+            ? []
+            : List<dynamic>.from(fcmTokens!.map((x) => x)),
         "followers": followers == null
             ? []
             : List<dynamic>.from(followers!.map((x) => x)),

@@ -6,7 +6,9 @@ import 'package:kaff_video_call/models/followers_model/followers_resp.dart';
 import 'package:kaff_video_call/models/following_list_model/following_resp.dart';
 import 'package:kaff_video_call/models/peopleList/peopleList_resp.dart';
 import 'package:kaff_video_call/models/profile_model/profile_resp.dart';
+import 'package:kaff_video_call/models/stream_model/end_stream_resp.dart';
 import 'package:kaff_video_call/models/stream_model/getStreamResp.dart';
+import 'package:kaff_video_call/models/streaming_notifier_model/start_notifier_resp_model.dart';
 import 'package:kaff_video_call/models/unfollow_model/unfollow_resp.dart';
 import 'package:kaff_video_call/utils/constant/api.dart';
 import 'package:kaff_video_call/models/login_model/login_resp.dart';
@@ -204,6 +206,54 @@ class ApiService {
       return value;
     } catch (e) {
       throw Exception('Failed to get all streams data: $e');
+    }
+  }
+
+  Future<StartLiveStreamingNotifierResp> startStreamingNotifier(req) async {
+    final data = req.toJson();
+    final headers = await createHeaders();
+    try {
+      final response = await dio.post(
+        URL.baseBathUrl + UrlPath.sendStreamingNotifier,
+        options: Options(validateStatus: (_) => true, headers: headers),
+        data: data,
+      );
+
+      final value = StartLiveStreamingNotifierResp.fromJson(response.data);
+      return value;
+    } catch (error) {
+      throw Exception('Failed to start streaming: $error');
+    }
+  }
+
+  Future<EndStreamResp> endStreaming(req) async {
+    final data = req.toJson();
+    final headers = await createHeaders();
+    try {
+      final response = await dio.post(
+        URL.baseBathUrl + UrlPath.endStream,
+        options: Options(validateStatus: (_) => true, headers: headers),
+        data: data,
+      );
+
+      final value = EndStreamResp.fromJson(response.data);
+      return value;
+    } catch (error) {
+      throw Exception('Failed to end streaming: $error');
+    }
+  }
+
+  Future<GetAllStreamResp> getMyStreamHistory() async {
+    final headers = await createHeaders();
+    try {
+      final response = await dio.get(
+        URL.baseBathUrl + UrlPath.getStreamHistory,
+        options: Options(validateStatus: (_) => true, headers: headers),
+      );
+      final value = GetAllStreamResp.fromJson(response.data);
+      return value;
+    } catch (e) {
+      throw Exception('Failed to get history streams data: $e');
     }
   }
 }

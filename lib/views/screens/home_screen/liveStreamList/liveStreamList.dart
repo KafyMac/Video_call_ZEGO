@@ -39,7 +39,7 @@ class _LiveStreamingHistoryState extends State<LiveStreamingHistory> {
                 final String? endedAtString =
                     widget.streamResp?.data?.streams?[index].endedAt;
                 final String? createdAtString =
-                    widget.streamResp?.data?.streams?[index].createdAt;
+                    widget.streamResp?.data?.streams?[index].createdAt!;
 
                 String formattedDuration =
                     "Duration not available"; // Default value

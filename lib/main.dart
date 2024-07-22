@@ -11,7 +11,6 @@ import 'package:kaff_video_call/views/screens/bottomNavbar/bottomnavbar_screen.d
 import 'package:kaff_video_call/views/screens/message_screen/message_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {

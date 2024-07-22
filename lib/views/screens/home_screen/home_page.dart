@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
 import 'package:kaff_video_call/models/profile_model/profile_resp.dart';
 import 'package:kaff_video_call/models/stream_model/getStreamResp.dart';
+import 'package:kaff_video_call/models/streaming_notifier_model/start_notifier_model.dart';
+import 'package:kaff_video_call/models/streaming_notifier_model/start_notifier_resp_model.dart';
 import 'package:kaff_video_call/network/api_connection.dart';
 import 'package:kaff_video_call/utils/shared/widgets/snack_bar.dart';
 import 'package:kaff_video_call/views/screens/home_screen/join_room/join_room_page.dart';
@@ -21,7 +23,9 @@ class _HomeScreenState extends State<HomeScreen> {
   bool? isLoading = false;
 
   GetAllStreamResp? streamResp;
+  GetAllStreamResp? streamHistoryResp;
   GetMyProfileResp? profileResp;
+  StartLiveStreamingNotifierResp? startStreamingNotResp;
 
   TextEditingController _callerId = TextEditingController();
 
@@ -33,6 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> initialize() async {
     await getAllStreams();
+    await getAllHistoryStreams();
+    await getMyProfile();
   }
 
   Future<void> getAllStreams() async {
@@ -43,12 +49,9 @@ class _HomeScreenState extends State<HomeScreen> {
       streamResp = await ApiService().getAllStreams();
 
       if (streamResp!.status == "Success") {
-        setState(() {
-          isLoading = false;
-        });
       } else {
         setState(() {
-          isLoading = true;
+          isLoading = false;
         });
         CustomSnackBar.showSnackBar(
             context: context,
@@ -58,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       setState(() {
-        isLoading = true;
+        isLoading = false;
       });
       CustomSnackBar.showSnackBar(
           context: context,
@@ -68,11 +71,35 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> getAllHistoryStreams() async {
+    try {
+      streamHistoryResp = await ApiService().getMyStreamHistory();
+
+      if (streamHistoryResp!.status == "Success") {
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        CustomSnackBar.showSnackBar(
+            context: context,
+            message: streamHistoryResp!.message.toString(),
+            color: Colors.red,
+            icons: Icons.unpublished_outlined);
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      CustomSnackBar.showSnackBar(
+          context: context,
+          message: streamHistoryResp!.message ?? "Failed to get all streams",
+          color: Colors.red,
+          icons: Icons.unpublished_outlined);
+    }
+  }
+
   Future<void> getMyProfile() async {
     try {
-      setState(() {
-        isLoading = true;
-      });
       profileResp = await ApiService().getMyProfile();
 
       if (profileResp!.status == "Success") {
@@ -81,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       } else {
         setState(() {
-          isLoading = true;
+          isLoading = false;
         });
         CustomSnackBar.showSnackBar(
             context: context,
@@ -91,11 +118,38 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       setState(() {
-        isLoading = true;
+        isLoading = false;
       });
       CustomSnackBar.showSnackBar(
           context: context,
           message: profileResp!.message ?? "Failed to get all streams",
+          color: Colors.red,
+          icons: Icons.unpublished_outlined);
+    }
+  }
+
+  Future<void> startStreaming({fcmTokens, liveId, userId, username}) async {
+    try {
+      var req = StartLiveStreamingNotifier(
+          fcmTokens: fcmTokens,
+          liveId: liveId,
+          userId: userId,
+          username: username);
+      startStreamingNotResp = await ApiService().startStreamingNotifier(req);
+
+      if (startStreamingNotResp!.status == "Success") {
+      } else {
+        CustomSnackBar.showSnackBar(
+            context: context,
+            message: startStreamingNotResp!.message.toString(),
+            color: Colors.red,
+            icons: Icons.unpublished_outlined);
+      }
+    } catch (e) {
+      CustomSnackBar.showSnackBar(
+          context: context,
+          message:
+              startStreamingNotResp!.message ?? "Failed to start streaming!",
           color: Colors.red,
           icons: Icons.unpublished_outlined);
     }
@@ -117,213 +171,231 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: RefreshIndicator(
-            backgroundColor: const Color(0xFF530062),
-            onRefresh: () async {
-              await getAllStreams();
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: MediaQuery.sizeOf(context).width,
-                      decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12))),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "Live Stream",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: isLoading!
-                                  ? null
-                                  : () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                LiveStreamingHistory(
-                                                    streamResp: streamResp),
-                                          ));
-                                    },
-                              child: const Text(
-                                "History",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w100,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      width: MediaQuery.sizeOf(context).width,
-                      decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12))),
-                      child: Padding(
+      body: RefreshIndicator(
+        backgroundColor: const Color(0xFF530062),
+        onRefresh: () async {
+          await initialize();
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.all(16.0),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.sizeOf(context).width,
+                        decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12))),
+                        child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: GestureDetector(
-                              onTap: () {},
-                              child: const Text(
-                                "Click to Start your Live Streaming!",
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Live Stream",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.bold,
                                 ),
-                              ))),
-                    ),
-                    const SizedBox(height: 10),
-                    isLoading!
-                        ? Container(
-                            width: MediaQuery.sizeOf(context).width,
-                            decoration: BoxDecoration(
-                                color: Colors.grey[900],
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(12))),
-                            child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Center(
-                                  child: CircularProgressIndicator(
-                                color: Color(0xFF530062),
-                              )),
-                            ),
-                          )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: streamResp?.data?.streams?.length ?? 0,
-                            itemBuilder: (context, index) {
-                              return streamResp
-                                              ?.data?.streams?[index].endedAt !=
-                                          "" ||
-                                      streamResp
-                                              ?.data?.streams?[index].endedAt !=
-                                          null
-                                  ? Container(
-                                      width: MediaQuery.sizeOf(context).width,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.2,
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey[900],
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(12))),
-                                      child: const Center(
-                                          child: Text(
+                              ),
+                              GestureDetector(
+                                onTap: isLoading!
+                                    ? null
+                                    : () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  LiveStreamingHistory(
+                                                      streamResp:
+                                                          streamHistoryResp),
+                                            ));
+                                      },
+                                child: const Text(
+                                  "History",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w100,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        width: MediaQuery.sizeOf(context).width,
+                        decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12))),
+                        child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                                onTap: () async {
+                                  _startAsHostDialog(context: context);
+                                },
+                                child: const Text(
+                                  "Click to Start your Live Streaming!",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ))),
+                      ),
+                      const SizedBox(height: 10),
+                      isLoading!
+                          ? Container(
+                              width: MediaQuery.sizeOf(context).width,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[900],
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(12))),
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                  color: Color(0xFF530062),
+                                )),
+                              ),
+                            )
+                          : Column(
+                              children: [
+                                if (streamResp?.data?.streams?.length == 0)
+                                  Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.2,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(12)),
+                                    ),
+                                    child: const Center(
+                                      child: Text(
                                         "Currently, there are no live streams available",
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16.0,
                                           fontWeight: FontWeight.bold,
                                         ),
-                                      )),
-                                    )
-                                  : streamingNowCard(
-                                      username: streamResp
-                                          ?.data?.streams?[index].username,
-                                      onTap: () {
-                                        _showJoinDialog(context);
-                                      });
-                            },
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount:
+                                        streamResp?.data?.streams?.length ?? 0,
+                                    itemBuilder: (context, index) {
+                                      final stream =
+                                          streamResp!.data!.streams![index];
+                                      if (stream.endedAt == null ||
+                                          stream.endedAt!.isEmpty) {
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: streamingNowCard(
+                                            username: stream.username,
+                                            onTap: () {
+                                              _showJoinDialog(
+                                                  context: context,
+                                                  streams: streamResp!
+                                                      .data!.streams![index]);
+                                            },
+                                          ),
+                                        );
+                                      }
+                                      return const SizedBox.shrink();
+                                    },
+                                  ),
+                              ],
+                            ),
+                      const Divider(
+                        color: Colors.grey,
+                      ),
+                      Container(
+                        width: MediaQuery.sizeOf(context).width,
+                        decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12))),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Connect",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                    const Divider(
-                      color: Colors.grey,
-                    ),
-                    Container(
-                      width: MediaQuery.sizeOf(context).width,
-                      decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12))),
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        width: MediaQuery.sizeOf(context).width,
+                        height: MediaQuery.of(context).size.height * 0.2,
+                        decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12))),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Text(
-                              "Connect",
+                            const Text(
+                              "Connect With People",
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 18,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const JoinRoom(),
+                                    ));
+                              },
+                              child: Container(
+                                width: 70,
+                                height: 70,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF530062),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 50,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      width: MediaQuery.sizeOf(context).width,
-                      height: MediaQuery.of(context).size.height * 0.2,
-                      decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12))),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          const Text(
-                            "Connect With People",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const JoinRoom(),
-                                  ));
-                            },
-                            child: Container(
-                              width: 70,
-                              height: 70,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF530062),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: const Icon(
-                                Icons.arrow_forward_rounded,
-                                size: 50,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ]),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -398,73 +470,23 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget startLiveStreaming() {
-    return Column(
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            if (ZegoUIKitPrebuiltLiveStreamingController()
-                .minimize
-                .isMinimizing) {
-              return;
-            }
-            jumpToLivePage(context,
-                liveID: "123", username: "kafeel", isHost: true);
-          },
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 50),
-          ),
-          child: const Text('Join as Host'),
-        ),
-        const SizedBox(height: 16),
-        OutlinedButton(
-          onPressed: () {
-            if (ZegoUIKitPrebuiltLiveStreamingController()
-                .minimize
-                .isMinimizing) {
-              return;
-            }
-            jumpToLivePage(context,
-                liveID: "123", username: "kafeel", isHost: false);
-          },
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 50),
-          ),
-          child: const Text('Join as Viewer'),
-        ),
-      ],
-    );
-  }
-
-  void _startLiveStreaming(BuildContext context) {
+  void _startAsHostDialog({BuildContext? context, Stream? streams}) {
     showDialog(
-      context: context,
+      context: context!,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Start Live Stream'),
+          title: Text('Create Live Stream'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextFormField(
-                controller: _callerId,
-                decoration: InputDecoration(labelText: 'Join group call by id'),
-              ),
               ElevatedButton(
                 onPressed: () {
-                  if (ZegoUIKitPrebuiltLiveStreamingController()
-                      .minimize
-                      .isMinimizing) {
-                    return;
-                  }
-                  jumpToLivePage(context,
-                      liveID: _callerId.text.toString(),
-                      username: profileResp!.data!.user!.name ?? "---",
-                      isHost: true);
+                  _showRoomIdDialog(context, isHost: true);
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                child: const Text('Start'),
+                child: const Text('Start as Host'),
               ),
             ],
           ),
@@ -473,9 +495,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showJoinDialog(BuildContext context) {
+  void _showJoinDialog({BuildContext? context, Stream? streams}) {
     showDialog(
-      context: context,
+      context: context!,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Join Live Stream'),
@@ -484,31 +506,27 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  if (ZegoUIKitPrebuiltLiveStreamingController()
-                      .minimize
-                      .isMinimizing) {
-                    return;
+                  if (streams!.liveId!.isNotEmpty) {
+                    Navigator.pop(context);
+                    if (ZegoUIKitPrebuiltLiveStreamingController()
+                        .minimize
+                        .isMinimizing) {
+                      return;
+                    }
+                    jumpToLivePage(
+                      context,
+                      liveID: streams.liveId!,
+                      username: profileResp!.data!.user!.name!,
+                      isHost: false,
+                      roomId: streams.id,
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Please enter a valid Room ID')),
+                    );
                   }
-                  jumpToLivePage(context,
-                      liveID: "123", username: "kafeel", isHost: true);
                 },
                 style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: const Text('Join as Host'),
-              ),
-              const SizedBox(height: 16),
-              OutlinedButton(
-                onPressed: () {
-                  if (ZegoUIKitPrebuiltLiveStreamingController()
-                      .minimize
-                      .isMinimizing) {
-                    return;
-                  }
-                  jumpToLivePage(context,
-                      liveID: "123", username: "kafeel", isHost: false);
-                },
-                style: OutlinedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 child: const Text('Join as Viewer'),
@@ -520,15 +538,101 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _showRoomIdDialog(BuildContext context,
+      {required bool isHost, Stream? streams}) {
+    TextEditingController roomIdController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Enter Room ID'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: roomIdController,
+                decoration: InputDecoration(labelText: 'Room ID'),
+                keyboardType: TextInputType.number,
+              ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: streams != null
+                    ? () {
+                        print("yes 123456789");
+                        if (streams.liveId!.isNotEmpty) {
+                          Navigator.pop(context);
+                          if (ZegoUIKitPrebuiltLiveStreamingController()
+                              .minimize
+                              .isMinimizing) {
+                            return;
+                          }
+                          startStreaming(
+                              fcmTokens: profileResp!.data!.otherUsersFcmTokens,
+                              liveId: streams.liveId,
+                              userId: profileResp!.data!.user!.id,
+                              username: profileResp!.data!.user!.name);
+                          jumpToLivePage(context,
+                              liveID: streams.liveId!,
+                              username: profileResp!.data!.user!.name!,
+                              isHost: isHost,
+                              roomId: streams.id);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Please enter a valid Room ID')),
+                          );
+                        }
+                      }
+                    : () async {
+                        print("12345");
+                        print("starting a new stream...");
+
+                        String roomId = roomIdController.text.trim();
+                        if (roomId.isNotEmpty) {
+                          Navigator.pop(context);
+                          if (ZegoUIKitPrebuiltLiveStreamingController()
+                              .minimize
+                              .isMinimizing) {
+                            return;
+                          }
+                          startStreaming(
+                              fcmTokens: profileResp!.data!.otherUsersFcmTokens,
+                              liveId: roomId,
+                              userId: profileResp!.data!.user!.id,
+                              username: profileResp!.data!.user!.name);
+                          jumpToLivePage(
+                            context,
+                            liveID: roomId,
+                            username: profileResp!.data!.user!.name!,
+                            isHost: isHost,
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Please enter a valid Room ID')),
+                          );
+                        }
+                      },
+                child: Text('Join'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void jumpToLivePage(BuildContext context,
       {required String liveID,
       required bool isHost,
-      required String username}) {
+      required String username,
+      String? roomId}) {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => LiveStreamingPage(
-              liveID: liveID,
-              isHost: isHost,
-              username: username,
-            )));
+            liveID: liveID,
+            isHost: isHost,
+            username: username,
+            roomId: roomId)));
   }
 }

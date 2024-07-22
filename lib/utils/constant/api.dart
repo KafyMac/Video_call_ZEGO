@@ -14,4 +14,7 @@ class UrlPath {
   static const String apiUnFollowUser = "admin/unfollow";
   static const String apiGetAllStreams = "admin/getAllStreams";
   static const String apiMyProfile = "admin/get/profile";
+  static const String sendStreamingNotifier = "admin/sendNotifications";
+  static const String endStream = "admin/updateStreamEndTime";
+  static const String getStreamHistory = "admin/getStreamHistory";
 }

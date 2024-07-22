@@ -53,15 +53,19 @@ class Data {
 }
 
 class Stream {
+  List<String>? fcmTokens;
   String? id;
+  String? liveId;
   String? userId;
   String? username;
   String? fcmToken;
-  String? endedAt;
+  dynamic endedAt;
   String? createdAt;
 
   Stream({
+    this.fcmTokens,
     this.id,
+    this.liveId,
     this.userId,
     this.username,
     this.fcmToken,
@@ -70,7 +74,11 @@ class Stream {
   });
 
   factory Stream.fromJson(Map<String, dynamic> json) => Stream(
+        fcmTokens: json["fcmTokens"] == null
+            ? []
+            : List<String>.from(json["fcmTokens"]!.map((x) => x)),
         id: json["_id"],
+        liveId: json["liveID"],
         userId: json["userId"],
         username: json["username"],
         fcmToken: json["fcmToken"],
@@ -79,7 +87,11 @@ class Stream {
       );
 
   Map<String, dynamic> toJson() => {
+        "fcmTokens": fcmTokens == null
+            ? []
+            : List<dynamic>.from(fcmTokens!.map((x) => x)),
         "_id": id,
+        "liveID": liveId,
         "userId": userId,
         "username": username,
         "fcmToken": fcmToken,
